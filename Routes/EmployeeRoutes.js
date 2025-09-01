@@ -6,48 +6,35 @@ import moment from 'moment';
 
 const router = express.Router();
 
-// ===== Employee Login =====
-router.post("/employee_login", async (req, res) => {
-  const { employeeId, password } = req.body;
+// Employee login
+router.post("/employee_login", (req, res) => {
+  const employeeId = req.body.employeeId;
+  const sql = "SELECT * FROM employee WHERE Id = ?";
 
-  if (!employeeId || !password) {
-    return res.json({ loginStatus: false, Error: "Employee ID and password are required" });
-  }
+  pool.query(sql, [employeeId], (err, result) => {
+    if (err) return res.json({ loginStatus: false, Error: "Query error" });
 
-  try {
-    const sql = "SELECT * FROM employee WHERE Id = ?";
-    pool.query(sql, [employeeId], async (err, result) => {
-      if (err) return res.json({ loginStatus: false, Error: "Query error" });
-
-      if (result.length === 0) return res.json({ loginStatus: false, Error: "Wrong employee ID or password" });
-
-      const match = await bcrypt.compare(password, result[0].password);
-      if (!match) return res.json({ loginStatus: false, Error: "Wrong employee ID or password" });
-
-      const token = jwt.sign(
-        { role: "employee", email: result[0].email, id: result[0].Id },
-        "jwt_secret_key",
-        { expiresIn: "1d" }
-      );
-
-      res.cookie("token", token, {
-        httpOnly: true,
-        secure: true,       // required if using HTTPS (Vercel)
-        sameSite: "none"    // allows cross-site cookie
+    if (result.length > 0) {
+      bcrypt.compare(req.body.password, result[0].password, (err, response) => {
+        if (err) return res.json({ loginStatus: false, Error: "Wrong password" });
+        if (response) {
+          const email = result[0].email;
+          const token = jwt.sign({ role: "employee", email: email, id: result[0].Id }, "jwt_secret_key", { expiresIn: "1d" });
+          res.cookie("token", token, { httpOnly: true, secure: true, sameSite: "none" });
+          return res.json({ loginStatus: true, id: result[0].Id });
+        } else {
+          return res.json({ loginStatus: false, Error: "Wrong password" });
+        }
       });
-
-      return res.json({ loginStatus: true, id: result[0].Id });
-    });
-  } catch (error) {
-    return res.json({ loginStatus: false, Error: error.message });
-  }
+    } else {
+      return res.json({ loginStatus: false, Error: "Wrong employee ID or password" });
+    }
+  });
 });
 
-// ===== Get Employee ID by Email =====
+// Get employee ID by email
 router.get('/idbyemail', (req, res) => {
   const email = req.query.email;
-  if (!email) return res.status(400).json({ error: "Email is required" });
-
   const sql = "SELECT Id FROM employee WHERE email = ?";
   pool.query(sql, [email], (err, results) => {
     if (err) return res.status(500).json({ error: "Server error" });
@@ -56,21 +43,19 @@ router.get('/idbyemail', (req, res) => {
   });
 });
 
-// ===== Get Employee Details =====
+// Employee details
 router.get('/detail/:id', (req, res) => {
   const id = req.params.id;
-  const sql = "SELECT * FROM employee WHERE Id = ?";
+  const sql = "SELECT * FROM employee WHERE id = ?";
   pool.query(sql, [id], (err, result) => {
-    if (err) return res.json({ Status: false, Error: "Query error" });
+    if (err) return res.json({ Status: false });
     return res.json({ Status: true, employee: result[0] });
   });
 });
 
-// ===== Employee Check-in =====
+// Check-in
 router.post('/checkin', (req, res) => {
   const { employeeId } = req.body;
-  if (!employeeId) return res.json({ Status: false, Error: "Employee ID is required" });
-
   const now = moment().format('YYYY-MM-DD HH:mm:ss');
   const today = moment().format('YYYY-MM-DD');
 
@@ -84,17 +69,15 @@ router.post('/checkin', (req, res) => {
       ON DUPLICATE KEY UPDATE check_in_time = VALUES(check_in_time), status = 'Present'
     `;
     pool.query(sqlAttendance, [employeeId, today, now], (err) => {
-      if (err) return res.json({ Status: false, Error: "Attendance insert failed" });
+      if (err) return res.json({ Status: false, Error: "Attendance update failed" });
       return res.json({ Status: true, Message: "Checked in successfully" });
     });
   });
 });
 
-// ===== Employee Check-out =====
+// Check-out
 router.post('/checkout', (req, res) => {
   const { employeeId } = req.body;
-  if (!employeeId) return res.json({ Status: false, Error: "Employee ID is required" });
-
   const now = moment().format('YYYY-MM-DD HH:mm:ss');
   const today = moment().format('YYYY-MM-DD');
 
@@ -105,11 +88,9 @@ router.post('/checkout', (req, res) => {
   });
 });
 
-// ===== Employee Attendance History =====
+// Attendance for a month
 router.get('/attendance/:employeeId/:month', (req, res) => {
   const { employeeId, month } = req.params;
-  if (!employeeId || !month) return res.json({ Status: false, Error: "Employee ID and month are required" });
-
   const startDate = moment(month, 'YYYY-MM').startOf('month').format('YYYY-MM-DD');
   const endDate = moment(month, 'YYYY-MM').endOf('month').format('YYYY-MM-DD');
 
@@ -121,16 +102,15 @@ router.get('/attendance/:employeeId/:month', (req, res) => {
   `;
   pool.query(sql, [employeeId, startDate, endDate], (err, results) => {
     if (err) return res.json({ Status: false, Error: "Error fetching attendance" });
-
     const totalLeaves = results.filter(r => !r.check_in_time || r.status === 'Leave').length;
     return res.json({ Status: true, attendance: results, totalLeaves });
   });
 });
 
-// ===== Employee Logout =====
+// Logout
 router.get('/logout', (req, res) => {
-  res.clearCookie('token', { httpOnly: true, secure: true, sameSite: 'none' });
-  return res.json({ Status: true, Message: "Logged out successfully" });
+  res.clearCookie('token');
+  return res.json({ Status: true });
 });
 
 export { router as EmployeeRouter };

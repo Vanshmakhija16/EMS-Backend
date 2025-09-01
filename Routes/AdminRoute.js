@@ -15,9 +15,10 @@ router.post("/adminlogin", (req, res) => {
   const sql = "SELECT * FROM admins WHERE email = ?";
   pool.query(sql, [req.body.email], (err, result) => {
     if (err) {
-      alert(err)
+        console.log(err)
+
       console.error("SQL Query Error in /adminlogin", err);
-      return res.json({ loginStatus: false, Error: "Query error " });
+      return res.json({ loginStatus: false, Error: "Query error " + err });
     }
     if (result.length > 0) {
       const password = result[0].password;

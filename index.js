@@ -7,20 +7,20 @@ import { TaskRouter } from "./Routes/TaskRoutes.js";
 
 const app = express();
 
-// ===== Allowed Origins =====
+// ===== CORS Middleware =====
 const allowedOrigins = [
   "https://ems-frontend-delta-nine.vercel.app",
   "http://localhost:5173"
 ];
 
-// ===== CORS Middleware =====
 app.use(cors({
   origin: allowedOrigins,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   credentials: true
 }));
 
-app.options("*", cors()); // preflight for all routes
+// Preflight
+app.options("*", cors());
 
 // ===== Middleware =====
 app.use(cookieParser());
@@ -34,14 +34,14 @@ app.use("/task", TaskRouter);
 // ===== Test route =====
 app.get("/", (req, res) => res.send("Backend server is running"));
 
-// ===== JWT Verification Middleware =====
+// ===== Auth verification middleware =====
 export const verifyUser = (req, res, next) => {
   const token = req.cookies.token;
-  if (!token) return res.status(401).json({ Status: false, Error: "Not authenticated" });
+  if (!token) return res.json({ Status: false, Error: "Not authenticated" });
 
   import("jsonwebtoken").then(Jwt => {
     Jwt.verify(token, "jwt_secret_key", (err, decoded) => {
-      if (err) return res.status(401).json({ Status: false, Error: "Wrong credentials" });
+      if (err) return res.json({ Status: false, Error: "Wrong credentials" });
       req.id = decoded.id;
       req.role = decoded.role;
       next();

@@ -17,6 +17,7 @@ app.use(cors({
   credentials: true,
     optionsSuccessStatus: 200, // sometimes needed for legacy browsers
 }));
+app.options('*', cors()); // enable preflight for all routes
 
 
 app.use((req, res, next) => {
@@ -27,7 +28,6 @@ app.use(express.json())
 app.use('/auth',adminRouter)
 app.use('/employee', EmployeeRouter)
 app.use('/task', TaskRouter);
-app.options('*', cors()); // enable preflight for all routes
 
 
 const verifyUser =((req,res,next)=>{

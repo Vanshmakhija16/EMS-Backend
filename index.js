@@ -10,10 +10,11 @@ import { TaskRouter } from './Routes/TaskRoutes.js';
 const app =express()
 
 app.use(cors({
-  origin: ['https://ems-backend-production-f43e.up.railway.app', 'https://ems-frontend-delta-nine.vercel.app'],
+  origin: ['https://ems-frontend-delta-nine.vercel.app', 'http://localhost:5173'],
   methods : ['GET','POST','PUT','DELETE'],
   credentials: true,
 }));
+
 
 app.use((req, res, next) => {
   console.log(`Incoming ${req.method} request to ${req.url}`);

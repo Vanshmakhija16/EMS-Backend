@@ -33,9 +33,9 @@ app.use(cookieParser());
 app.use(express.json());
 
 // ===== Routes =====
-app.use("/auth", adminRouter);
-app.use("/employee", EmployeeRouter);
-app.use("/task", TaskRouter);
+// app.use("/auth", adminRouter);
+// app.use("/employee", EmployeeRouter);
+// app.use("/task", TaskRouter);
 
 // ===== Test route =====
 app.get("/", (req, res) => res.send("Backend server is running"));
@@ -56,7 +56,7 @@ export const verifyUser = (req, res, next) => {
 };
 
 // ===== Verify route =====
-app.get("/verify", verifyUser, (req, res) => {
+// app.get("/verify", verifyUser, (req, res) => {
   return res.json({ Status: true, role: req.role, id: req.id });
 });
 

@@ -10,10 +10,11 @@ import { TaskRouter } from './Routes/TaskRoutes.js';
 const app =express()
 
 app.use(cors({
-    origin : ["http://localhost:5173"],
-    methods : ['GET','POST','PUT','DELETE'],
-    credentials : true
-}))
+  origin: ['http://localhost:5173', 'https://your-frontend-domain.com'],
+  methods : ['GET','POST','PUT','DELETE'],
+  credentials: true,
+}));
+
 app.use((req, res, next) => {
   console.log(`Incoming ${req.method} request to ${req.url}`);
   next();

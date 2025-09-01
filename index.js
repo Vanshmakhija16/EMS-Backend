@@ -8,10 +8,13 @@ import { TaskRouter } from "./Routes/TaskRoutes.js";
 const app = express();
 
 // ===== CORS Middleware =====
-const allowedOrigins = [
-  "https://ems-frontend-delta-nine.vercel.app",
-  "http://localhost:5173"
-];
+app.use(cors({
+  origin: ["https://ems-frontend-delta-nine.vercel.app"],
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  credentials: true
+}));
+app.options("*", cors());
+
 
 app.use((req, res, next) => {
   const origin = req.headers.origin;

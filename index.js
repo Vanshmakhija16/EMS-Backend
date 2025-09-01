@@ -10,7 +10,7 @@ const app = express();
 // ===== CORS Middleware =====
 app.use(cors({
   origin: [
-    "https://ems-frontend-mqgg1xb2r-vanshs-projects-ea5df97d.vercel.app",
+    "https://ems-frontend-delta-nine.vercel.app",
     "http://localhost:5173"
   ],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],

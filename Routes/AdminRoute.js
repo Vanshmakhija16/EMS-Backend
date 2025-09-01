@@ -6,7 +6,12 @@ import multer from "multer";
 import path from "path";
 import { console } from "inspector";
 
+
 const router = express.Router();
+
+router.get('/', (req, res) => {
+  res.send('Backend server is running');
+});
 
 router.post("/adminlogin", (req, res) => {
   const sql = "SELECT * FROM admin WHERE email = ?";

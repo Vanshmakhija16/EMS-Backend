@@ -9,6 +9,8 @@ import { TaskRouter } from './Routes/TaskRoutes.js';
 
 const app =express()
 
+app.use(cookieParser())
+
 app.use(cors({
   origin: ['https://ems-frontend-delta-nine.vercel.app', 'http://localhost:5173'],
   methods : ['GET','POST','PUT','DELETE'],
@@ -24,7 +26,6 @@ app.use((req, res, next) => {
 app.use(express.json())
 app.use('/auth',adminRouter)
 app.use('/employee', EmployeeRouter)
-app.use(cookieParser())
 app.use('/task', TaskRouter);
 app.options('*', cors()); // enable preflight for all routes
 

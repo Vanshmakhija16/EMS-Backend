@@ -13,6 +13,7 @@ app.use(cors({
   origin: ['https://ems-frontend-delta-nine.vercel.app', 'http://localhost:5173'],
   methods : ['GET','POST','PUT','DELETE'],
   credentials: true,
+    optionsSuccessStatus: 200, // sometimes needed for legacy browsers
 }));
 
 
@@ -25,6 +26,7 @@ app.use('/auth',adminRouter)
 app.use('/employee', EmployeeRouter)
 app.use(cookieParser())
 app.use('/task', TaskRouter);
+app.options('*', cors()); // enable preflight for all routes
 
 
 const verifyUser =((req,res,next)=>{

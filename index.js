@@ -10,7 +10,7 @@ import { TaskRouter } from './Routes/TaskRoutes.js';
 const app =express()
 
 app.use(cors({
-  origin: ['http://localhost:5173', 'https://your-frontend-domain.com'],
+  origin: ['https://ems-backend-production-f43e.up.railway.app', 'https://ems-frontend-delta-nine.vercel.app'],
   methods : ['GET','POST','PUT','DELETE'],
   credentials: true,
 }));

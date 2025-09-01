@@ -9,8 +9,6 @@ import { TaskRouter } from './Routes/TaskRoutes.js';
 
 const app =express()
 
-app.use(cookieParser())
-
 app.use(cors({
   origin: ['https://ems-frontend-delta-nine.vercel.app', 'http://localhost:5173'],
   methods : ['GET','POST','PUT','DELETE'],
@@ -24,6 +22,7 @@ app.use((req, res, next) => {
   console.log(`Incoming ${req.method} request to ${req.url}`);
   next();
 });
+app.use(cookieParser())
 app.use(express.json())
 app.use('/auth',adminRouter)
 app.use('/employee', EmployeeRouter)

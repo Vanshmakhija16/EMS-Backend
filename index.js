@@ -49,6 +49,7 @@ export const verifyUser = (req, res, next) => {
   });
 };
 
+
 // ===== Verify route =====
 app.get("/verify", verifyUser, (req, res) => {
   return res.json({ Status: true, role: req.role, id: req.id });

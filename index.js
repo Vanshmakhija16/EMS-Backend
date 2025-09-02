@@ -1,4 +1,3 @@
-// index.js (Backend Entry Point)
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
@@ -8,7 +7,7 @@ import { TaskRouter } from "./Routes/TaskRoutes.js";
 
 const app = express();
 
-// ===== CORS Middleware =====
+// ===== CORS Setup =====
 const allowedOrigins = [
   "https://ems-frontend-delta-nine.vercel.app",
   "http://localhost:5173"
@@ -20,7 +19,7 @@ app.use(cors({
   credentials: true
 }));
 
-// Preflight
+// Preflight requests
 app.options("*", cors());
 
 // ===== Middleware =====
@@ -35,12 +34,12 @@ app.use("/task", TaskRouter);
 // ===== Test route =====
 app.get("/", (req, res) => res.send("Backend server is running"));
 
-// ===== Catch-all 404 route (Fixed for path-to-regexp) =====
+// ===== Catch-all 404 route (prevents path-to-regexp errors) =====
 app.use("/*notFound", (req, res) => {
   res.status(404).json({ message: "Route not found" });
 });
 
-// ===== Auth verification middleware =====
+// ===== JWT Verification Middleware =====
 export const verifyUser = (req, res, next) => {
   const token = req.cookies.token;
   if (!token) return res.json({ Status: false, Error: "Not authenticated" });
@@ -54,6 +53,11 @@ export const verifyUser = (req, res, next) => {
     });
   });
 };
+
+// ===== Verify token route =====
+app.get("/verify", verifyUser, (req, res) => {
+  return res.json({ Status: true, role: req.role, id: req.id });
+});
 
 // ===== Start server =====
 const PORT = process.env.PORT || 3000;

@@ -35,10 +35,7 @@ app.use("/task", TaskRouter);
 // ===== Test route =====
 app.get("/", (req, res) => res.send("Backend server is running"));
 
-// ===== Catch-all 404 route (prevents path-to-regexp errors) =====
-app.use("/*notFound", (req, res) => {
-  res.status(404).json({ message: "Route not found" });
-});
+
 
 // ===== JWT Verification Middleware =====
 export const verifyUser = (req, res, next) => {

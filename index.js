@@ -27,8 +27,8 @@ app.use(cookieParser());
 app.use(express.json());
 
 // ===== Routes =====
-app.use("/auth", adminRouter);
-app.use("/employee", EmployeeRouter);
+// app.use("/auth", adminRouter);
+// app.use("/employee", EmployeeRouter);
 app.use("/task", TaskRouter);
 
 // ===== Test route =====

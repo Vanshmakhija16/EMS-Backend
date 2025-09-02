@@ -6,6 +6,8 @@ import { adminRouter } from "./Routes/AdminRoute.js";
 import { EmployeeRouter } from "./Routes/EmployeeRoutes.js";
 import { TaskRouter } from "./Routes/TaskRoutes.js";
 
+console.log("🚀 Starting server...");
+
 // ===== Load env variables =====
 dotenv.config();
 
@@ -29,6 +31,10 @@ app.options("*", cors());
 // ===== Middleware =====
 app.use(cookieParser());
 app.use(express.json());
+app.use((err, req, res, next) => {
+  console.error("❌ Uncaught error:", err);
+  res.status(500).json({ error: "Internal server error" });
+});
 
 // ===== Routes =====
 app.use("/auth", adminRouter);

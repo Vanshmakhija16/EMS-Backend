@@ -11,6 +11,7 @@ const router = express.Router();
 // Admin Login
 // Admin Login - FIXED VERSION
 router.post("/adminlogin", (req, res) => {
+  console.log("you have reached to adminlogin route")
   const sql = "SELECT * FROM admins WHERE email = ?";
   pool.query(sql, [req.body.email], (err, result) => {
     if (err) {

@@ -6,26 +6,7 @@ import bcrypt from "bcrypt";
 const router = express.Router();
 
 // Admin Signup
-router.post("/adminsignup", (req, res) => {
-  const { email, password } = req.body;
-  if (!email || !password) return res.json({ Status: false, Error: "Email and password are required" });
 
-  const checkSql = "SELECT * FROM admins WHERE email = ?";
-  pool.query(checkSql, [email], (err, result) => {
-    if (err) return res.json({ Status: false, Error: "Database query error" });
-    if (result.length > 0) return res.json({ Status: false, Error: "Email already registered" });
-
-    bcrypt.hash(password, 10, (err, hashedPassword) => {
-      if (err) return res.json({ Status: false, Error: "Failed to encrypt password" });
-
-      const insertSql = "INSERT INTO admins (email, password) VALUES (?, ?)";
-      pool.query(insertSql, [email, hashedPassword], (err, result) => {
-        if (err) return res.json({ Status: false, Error: "Database insert error" });
-        return res.json({ Status: true, Message: "Admin registered successfully" });
-      });
-    });
-  });
-});
 
 // Admin Login
 // Admin Login - FIXED VERSION

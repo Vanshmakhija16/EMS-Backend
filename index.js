@@ -6,6 +6,9 @@ import { adminRouter } from "./Routes/AdminRoute.js";
 import { EmployeeRouter } from "./Routes/EmployeeRoutes.js";
 import { TaskRouter } from "./Routes/TaskRoutes.js";
 
+// ===== Load env variables =====
+dotenv.config();
+
 const app = express();
 
 // ===== CORS Setup =====
@@ -33,9 +36,7 @@ app.use("/employee", EmployeeRouter);
 app.use("/task", TaskRouter);
 
 // ===== Test route =====
-app.get("/", (req, res) => res.send("Backend server is running"));
-
-
+app.get("/", (req, res) => res.send("✅ Backend server is running"));
 
 // ===== JWT Verification Middleware =====
 export const verifyUser = (req, res, next) => {
@@ -59,4 +60,6 @@ app.get("/verify", verifyUser, (req, res) => {
 
 // ===== Start server =====
 const PORT = process.env.PORT || 8080;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`🚀 Server running on port ${PORT}`);
+});

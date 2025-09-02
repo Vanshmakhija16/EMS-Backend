@@ -1,3 +1,4 @@
+// index.js (Backend Entry Point)
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
@@ -34,6 +35,11 @@ app.use("/task", TaskRouter);
 // ===== Test route =====
 app.get("/", (req, res) => res.send("Backend server is running"));
 
+// ===== Catch-all 404 route (Fixed for path-to-regexp) =====
+app.use("/*notFound", (req, res) => {
+  res.status(404).json({ message: "Route not found" });
+});
+
 // ===== Auth verification middleware =====
 export const verifyUser = (req, res, next) => {
   const token = req.cookies.token;
@@ -48,12 +54,6 @@ export const verifyUser = (req, res, next) => {
     });
   });
 };
-
-
-// ===== Verify route =====
-app.get("/verify", verifyUser, (req, res) => {
-  return res.json({ Status: true, role: req.role, id: req.id });
-});
 
 // ===== Start server =====
 const PORT = process.env.PORT || 3000;

@@ -5,13 +5,9 @@ import bcrypt from "bcrypt";
 
 const router = express.Router();
 
-// Admin Signup
-
-
 // Admin Login
-// Admin Login - FIXED VERSION
 router.post("/adminlogin", (req, res) => {
-  console.log("you have reached to adminlogin route")
+  console.log("you have reached to adminlogin route");
   const sql = "SELECT * FROM admins WHERE email = ?";
   pool.query(sql, [req.body.email], (err, result) => {
     if (err) {
@@ -25,7 +21,6 @@ router.post("/adminlogin", (req, res) => {
 
     const hashedPassword = result[0].password;
     
-    // ✅ CORRECT: Use bcrypt.compare instead of direct comparison
     bcrypt.compare(req.body.password, hashedPassword, (err, isMatch) => {
       if (err) {
         console.error("Bcrypt error:", err);
@@ -36,10 +31,10 @@ router.post("/adminlogin", (req, res) => {
         return res.json({ loginStatus: false, Error: "Wrong email or password" });
       }
 
-      // Password is correct, create token
+      // Password is correct, create token with env secret
       const token = jwt.sign(
         { role: "admin", email: result[0].email, id: result[0].Id }, 
-        "jwt_secret_key", 
+        process.env.JWT_SECRET, 
         { expiresIn: "1d" }
       );
       

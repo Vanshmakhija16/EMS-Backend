@@ -31,10 +31,7 @@ app.options("*", cors());
 // ===== Middleware =====
 app.use(cookieParser());
 app.use(express.json());
-app.use((err, req, res, next) => {
-  console.error("❌ Uncaught error:", err);
-  res.status(500).json({ error: "Internal server error" });
-});
+
 
 // ===== Routes =====
 app.use("/auth", adminRouter);
@@ -49,14 +46,16 @@ export const verifyUser = (req, res, next) => {
   const token = req.cookies.token;
   if (!token) return res.json({ Status: false, Error: "Not authenticated" });
 
+// ...existing code...
   import("jsonwebtoken").then(Jwt => {
-    Jwt.verify(token, "jwt_secret_key", (err, decoded) => {
+    Jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
       if (err) return res.json({ Status: false, Error: "Wrong credentials" });
       req.id = decoded.id;
       req.role = decoded.role;
       next();
     });
   });
+
 };
 
 // ===== Verify token route =====
@@ -64,6 +63,10 @@ app.get("/verify", verifyUser, (req, res) => {
   return res.json({ Status: true, role: req.role, id: req.id });
 });
 
+app.use((err, req, res, next) => {
+  console.error("❌ Uncaught error:", err);
+  res.status(500).json({ error: "Internal server error" });
+});
 // ===== Start server =====
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, "0.0.0.0", () => {

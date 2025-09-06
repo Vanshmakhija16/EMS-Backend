@@ -19,7 +19,12 @@ router.post("/employee_login", (req, res) => {
         if (err) return res.json({ loginStatus: false, Error: "Wrong password" });
         if (response) {
           const email = result[0].email;
-          const token = jwt.sign({ role: "employee", email: email, id: result[0].Id }, "jwt_secret_key", { expiresIn: "1d" });
+          // Use process.env.JWT_SECRET instead of hardcoded string
+          const token = jwt.sign(
+            { role: "employee", email: email, id: result[0].Id },
+            process.env.JWT_SECRET,
+            { expiresIn: "1d" }
+          );
           res.cookie("token", token, { httpOnly: true, secure: true, sameSite: "none" });
           return res.json({ loginStatus: true, id: result[0].Id });
         } else {
